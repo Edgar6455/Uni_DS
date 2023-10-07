@@ -26,7 +26,7 @@ private:
 
 public:
 
-    explicit Vector(size_t size = 0, T elem = 0) : size_(size), capacity_(size_)
+    explicit Vector(size_t size, T elem) : size_(size), capacity_(size_)
     {
         if (size_ == 0 || size_ == 1)
             capacity_ = 2;
@@ -38,6 +38,15 @@ public:
         }
     }
 
+    explicit Vector(size_t size = 0) : size_(size), capacity_(size_)
+    {
+        if (size_ == 0 || size_ == 1)
+            capacity_ = 2;
+
+        arr = new T[capacity_];
+    }
+
+
     ~Vector()
     {
         size_ = 0;
@@ -48,7 +57,6 @@ public:
 
     Vector(const Vector<T>& other)
     {
-        delete[] arr;
         arr = new T[capacity_];
         size_ = other.size_;
         capacity_ = other.capacity_;
@@ -60,7 +68,6 @@ public:
 
     Vector(Vector<T>&& other)
     {
-        delete[] arr;
         size_ = other.size_;
         capacity_ = other.capacity_;
         arr = other.arr;
@@ -73,7 +80,7 @@ public:
             return *this;
 
         delete[] arr;
-        arr = new T[capacity_];
+        arr = new T[other.capacity_];
         size_ = other.size_;
         capacity_ = other.capacity_;
 
@@ -99,10 +106,6 @@ public:
 
     T &operator[](size_t index)
     {
-        if (index >= size_) {
-            std::cerr << "Array index out of bound, exiting";
-            exit(0);
-        }
         return arr[index];
     }
 
@@ -132,6 +135,14 @@ public:
         if (size_ + 1 > capacity_)
             relocate();
         arr[size_] = elem;
+        ++size_;
+    }
+
+    void push_back(const T&& elem)
+    {
+        if (size_ + 1 > capacity_)
+            relocate();
+        arr[size_] = std::move(elem);
         ++size_;
     }
 
